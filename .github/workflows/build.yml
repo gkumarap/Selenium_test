@@ -1,0 +1,60 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@gkumarap 
+cucumber
+/
+cucumber-java-skeleton
+Public
+Code
+Issues
+Pull requests
+1
+Actions
+Projects
+Wiki
+Security
+Insights
+cucumber-java-skeleton/.github/workflows/build.yml
+@mpkorstanje
+mpkorstanje Update Cucumber to v7.0.0
+Latest commit f61dffe on Oct 10, 2021
+ History
+ 1 contributor
+31 lines (29 sloc)  1.07 KB
+   
+name: Cucumber CI
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: build-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            build-${{ runner.os }}-maven-
+      - uses:
+          AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+      - name: test maven
+        run: ./mvnw test -Dmaven.test.failure.ignore
+      - run: grep -q "The step 'I wait 1 hour' and 1 other step(s) are undefined." target/surefire-reports/io.cucumber.skeleton.RunCucumberTest.txt || ( echo "mvn test didn't fail as expected" && false )
+      - name: test gradle
+        run: ./gradlew test || true
+      - run: grep -q "The step 'I wait 1 hour' and 1 other step(s) are undefined." build/reports/tests/test/classes/io.cucumber.skeleton.RunCucumberTest.html  || ( echo "gradle test didn't fail as expected" && false )
