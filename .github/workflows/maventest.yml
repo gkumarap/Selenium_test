@@ -1,0 +1,4 @@
+name: maven CI CD 
+on: 
+push: 
+branches: [master]
